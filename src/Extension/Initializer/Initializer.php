@@ -28,15 +28,22 @@ class Initializer implements ContextInitializer
     private $autoRestore = false;
 
     /**
+     * @var string
+     */
+    private $backupPath;
+
+    /**
      * @param array $connection
      * @param array $dataModMapping
      */
     public function __construct(
-        array $connection = [],
+        array $connection,
+        string $backupPath,
         bool $autoBackup = false,
         bool $autoRestore = false
     ) {
         $this->connection = $connection;
+        $this->backupPath = $backupPath;
         $this->autoBackup = $autoBackup;
         $this->autoRestore = $autoRestore;
     }
@@ -47,7 +54,7 @@ class Initializer implements ContextInitializer
     public function initializeContext(Context $context)
     {
         if ($context instanceof DBBackupContext) {
-            $context::$config = new Config($this->connection, $this->autoBackup, $this->autoRestore);
+            $context::$config = new Config($this->connection, $this->backupPath, $this->autoBackup, $this->autoRestore);
         }
     }
 }

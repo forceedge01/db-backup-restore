@@ -96,6 +96,9 @@ class Extension implements ExtensionInterface
                 ->scalarNode('autoRestore')
                     ->defaultNull(false)
                 ->end()
+                ->scalarNode('backupPath')
+                    ->defaultNull(false)
+                ->end()
             ->end()
         ->end();
     }
@@ -113,6 +116,11 @@ class Extension implements ExtensionInterface
         }
         $container->setParameter('genesis.dbbackup.config.connection', $config['connection']);
 
+        if (! isset($config['backupPath'])) {
+            throw new \Exception('Backup path is required.');
+        }
+        $container->setParameter('genesis.dbbackup.config.backupPath', $config['backupPath']);
+
         if (! isset($config['autoBackup'])) {
             $config['autoBackup'] = false;
         }
@@ -125,6 +133,7 @@ class Extension implements ExtensionInterface
 
         $definition = new Definition(Initializer::class, [
             '%genesis.dbbackup.config.connection%',
+            '%genesis.dbbackup.config.backupPath%',
             '%genesis.dbbackup.config.autoBackup%',
             '%genesis.dbbackup.config.autoRestore%',
         ]);

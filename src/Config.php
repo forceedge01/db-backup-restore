@@ -11,16 +11,21 @@ class Config
 
     private $backupConfig;
 
-    public function __construct(array $databaseConfig = [], bool $autoBackup = false, bool $autoRestore = false)
+    public function __construct(array $databaseConfig, string $backupPath, bool $autoBackup = false, bool $autoRestore = false)
     {
         $this->databaseConfig = $databaseConfig;
+        $this->backupPath = $backupPath;
         $this->autoBackup = $autoBackup;
         $this->autoRestore = $autoRestore;
     }
 
-    public function getDatabaseConfig(): array
+    public function getDatabaseConfig($key, $default = null): ?string
     {
-        return $this->databaseConfig;
+        if (!isset($this->databaseConfig[$key])) {
+            return $default;
+        }
+
+        return $this->databaseConfig[$key];
     }
 
     public function autoBackup(): bool
@@ -31,5 +36,10 @@ class Config
     public function autoRestore(): bool
     {
         return $this->autoRestore;
+    }
+
+    public function getBackupPath(): string
+    {
+        return $this->backupPath;
     }
 }
