@@ -5,7 +5,7 @@ namespace Genesis\DBBackup\Extension\ServiceContainer;
 use Behat\Behat\Context\ServiceContainer\ContextExtension;
 use Behat\Testwork\ServiceContainer\Extension as ExtensionInterface;
 use Behat\Testwork\ServiceContainer\ExtensionManager;
-use Genesis\SQLExtensionWrapper\Extension\Initializer\Initializer;
+use Genesis\DBBackup\Extension\Initializer\Initializer;
 use Symfony\Component\Config\Definition\Builder\ArrayNodeDefinition;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Definition;
@@ -94,6 +94,9 @@ class Extension implements ExtensionInterface
                     ->defaultNull(false)
                 ->end()
                 ->scalarNode('autoRestore')
+                    ->defaultNull(false)
+                ->end()
+                ->scalarNode('autoRemove')
                     ->defaultNull(false)
                 ->end()
                 ->scalarNode('backupPath')

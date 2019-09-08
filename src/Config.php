@@ -1,6 +1,6 @@
 <?php
 
-namespace DBBackup;
+namespace Genesis\DBBackup;
 
 /**
  * Config class.
@@ -9,14 +9,18 @@ class Config
 {
     private $databaseConfig;
 
-    private $backupConfig;
-
-    public function __construct(array $databaseConfig, string $backupPath, bool $autoBackup = false, bool $autoRestore = false)
-    {
+    public function __construct(
+        array $databaseConfig,
+        string $backupPath,
+        bool $autoBackup = false,
+        bool $autoRestore = false,
+        bool $autoRemove = false
+    ) {
         $this->databaseConfig = $databaseConfig;
         $this->backupPath = $backupPath;
         $this->autoBackup = $autoBackup;
         $this->autoRestore = $autoRestore;
+        $this->autoRemove = $autoRemove;
     }
 
     public function getDatabaseConfig($key, $default = null): ?string
@@ -36,6 +40,11 @@ class Config
     public function autoRestore(): bool
     {
         return $this->autoRestore;
+    }
+
+    public function autoRemove(): bool
+    {
+        return $this->autoRemove;
     }
 
     public function getBackupPath(): string
