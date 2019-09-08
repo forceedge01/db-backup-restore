@@ -1,6 +1,6 @@
 {
-	"name": "genesis/db-backup-restore",
-	"description": "Quickly backup and restore your local database after a test run.",
+    "name": "genesis/db-backup-restore",
+    "description": "Quickly backup and restore your local database after a test run.",
     "keywords": ["web", "test", "browser", "pdo", "behat", "sql", "testing", "bdd", "database", "mysql", "data"],
     "license": "MIT",
     "authors": [
@@ -9,18 +9,18 @@
             "email": "its.inevitable@hotmail.com"
         }
     ],
-	"require": {
+    "require": {
         "behat/behat": "~3.0",
         "php": "~7.0",
         "ext-pdo": "*"
-	},
-	"require-dev": {
+    },
+    "require-dev": {
         "phpunit/phpunit": "~7.0"
-	},
-	"autoload": {
-		"psr-4": {
+    },
+    "autoload": {
+        "psr-4": {
             "Genesis\\DBBackup\\": "src/",
             "Genesis\\DBBackup\\Tests\\": "tests/"
-		}
-	}
+        }
+    }
 }
