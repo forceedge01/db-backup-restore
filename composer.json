@@ -1,5 +1,5 @@
 {
-	"name": "genesis/db-backup",
+	"name": "genesis/db-backup-restore",
 	"description": "Quickly backup and restore your local database after a test run.",
     "keywords": ["web", "test", "browser", "pdo", "behat", "sql", "testing", "bdd", "database", "mysql", "data"],
     "license": "MIT",
