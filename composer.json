@@ -1,6 +1,14 @@
 {
 	"name": "genesis/db-backup",
 	"description": "Quickly backup and restore your local database after a test run.",
+    "keywords": ["web", "test", "browser", "pdo", "behat", "sql", "testing", "bdd", "database", "mysql", "data"],
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Abdul Wahhab Qureshi",
+            "email": "its.inevitable@hotmail.com"
+        }
+    ],
 	"require": {
         "behat/behat": "~3.0",
         "php": "~7.0",
