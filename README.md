@@ -6,10 +6,9 @@ Use this package to quickly backup and restore your database during test executi
 Key features:
 
 - A backup is created before any tests are executed.
--- The database backup process will halt the execution plan if there is an error.
-
+- The database backup process will halt the execution plan if there is an error.
 - The backup is restored after all tests have been executed.
--- The restore plan will not execute if the backup has failed.
+- The restore plan will not execute if the backup has failed.
 
 Supported databases:
 - mysql
