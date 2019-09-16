@@ -12,6 +12,7 @@ Key features:
 
 Supported databases:
 - mysql
+- Feel free to submit a PR, its pretty easy to add support for one.
 
 This project is usually only suitable where the database is small and fairly quick to backup and restore. Using it locally can help when your tests amend the database state while executing and you need the data reset afterwards.
 
