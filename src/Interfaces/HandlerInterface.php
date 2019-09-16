@@ -1,5 +1,9 @@
 <?php
 
+namespace Genesis\DBBackup\Interfaces;
+
+use Genesis\DBBackup\Config;
+
 /**
  * Handler interface.
  */

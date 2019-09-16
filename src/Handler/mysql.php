@@ -3,11 +3,12 @@
 namespace Genesis\DBBackup\Handler;
 
 use Genesis\DBBackup\Config;
+use Genesis\DBBackup\Interfaces\HandlerInterface;
 
 /**
  * mysql class.
  */
-class mysql
+class mysql implements HandlerInterface
 {
     /**
      * @param Config $config
