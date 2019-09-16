@@ -104,6 +104,21 @@ class DBBackupContext implements Context
     }
 
     /**
+     * @AfterSuite
+     * @param mixed $suite
+     */
+    public static function keepBackupsClean($suite)
+    {
+        if (self::$config->keepClean() && self::$backupError === false) {
+            echo 'Cleaning all backup files...' . PHP_EOL;
+            exec(sprintf(
+                'rm -rf %s*',
+                self::$config->getBackupPath()  . DIRECTORY_SEPARATOR
+            ));
+        }
+    }
+
+    /**
      * @return string
      */
     private static function getHandler(string $handlerRef): string

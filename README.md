@@ -34,6 +34,7 @@ default:
             autoRestore: true
             autoRemove: true
             backupPath: ./backups # You'll need to create this folder.
+            keepClean: false # Will remove all backups test suite ends, can get rid of lingering files.
             connections:
                 mysql:
                     engine: mysql

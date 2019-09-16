@@ -16,13 +16,15 @@ class Config
         string $backupPath,
         bool $autoBackup = false,
         bool $autoRestore = false,
-        bool $autoRemove = false
+        bool $autoRemove = false,
+        bool $keepClean = false
     ) {
         $this->databaseConfigs = $databaseConfigs;
         $this->backupPath = realpath($backupPath);
         $this->autoBackup = $autoBackup;
         $this->autoRestore = $autoRestore;
         $this->autoRemove = $autoRemove;
+        $this->keepClean = $keepClean;
 
         if (! $this->backupPath) {
             throw new \Exception("Path $backupPath not found.");
@@ -81,5 +83,10 @@ class Config
     public function getBackupPath(): string
     {
         return $this->backupPath;
+    }
+
+    public function keepClean(): bool
+    {
+        return $this->keepClean;
     }
 }

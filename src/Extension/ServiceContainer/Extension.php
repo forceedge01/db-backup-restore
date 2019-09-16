@@ -88,6 +88,9 @@ class Extension implements ExtensionInterface
                 ->scalarNode('backupPath')
                     ->defaultNull(false)
                 ->end()
+                ->scalarNode('keepClean')
+                    ->defaultNull(false)
+                ->end()
             ->end()
         ->end();
     }
@@ -125,12 +128,18 @@ class Extension implements ExtensionInterface
         }
         $container->setParameter('genesis.dbbackup.config.autoRemove', $config['autoRemove']);
 
+        if (! isset($config['keepClean'])) {
+            $config['keepClean'] = false;
+        }
+        $container->setParameter('genesis.dbbackup.config.keepClean', $config['keepClean']);
+
         $definition = new Definition(Initializer::class, [
             '%genesis.dbbackup.config.connections%',
             '%genesis.dbbackup.config.backupPath%',
             '%genesis.dbbackup.config.autoBackup%',
             '%genesis.dbbackup.config.autoRestore%',
             '%genesis.dbbackup.config.autoRemove%',
+            '%genesis.dbbackup.config.keepClean%',
         ]);
         $definition->addTag(ContextExtension::INITIALIZER_TAG);
         $container->setDefinition(self::CONTEXT_INITIALISER, $definition);

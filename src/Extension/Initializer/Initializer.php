@@ -33,6 +33,11 @@ class Initializer implements ContextInitializer
     private $autoRemove = false;
 
     /**
+     * @var boolean
+     */
+    private $keepClean = false;
+
+    /**
      * @var string
      */
     private $backupPath;
@@ -46,13 +51,15 @@ class Initializer implements ContextInitializer
         string $backupPath,
         bool $autoBackup = false,
         bool $autoRestore = false,
-        bool $autoRemove = false
+        bool $autoRemove = false,
+        bool $keepClean = false
     ) {
         $this->connections = $connections;
         $this->backupPath = $backupPath;
         $this->autoBackup = $autoBackup;
         $this->autoRestore = $autoRestore;
         $this->autoRemove = $autoRemove;
+        $this->keepClean = $keepClean;
     }
 
     /**
@@ -66,7 +73,8 @@ class Initializer implements ContextInitializer
                 $this->backupPath,
                 $this->autoBackup,
                 $this->autoRestore,
-                $this->autoRemove
+                $this->autoRemove,
+                $this->keepClean
             );
         }
     }
