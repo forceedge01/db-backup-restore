@@ -17,3 +17,31 @@ Supported databases:
 This project is usually only suitable where the database is small and fairly quick to backup and restore. Using it locally can help when your tests amend the database state while executing and you need the data reset afterwards.
 
 This extension is not yet unit tested so please report any bugs you may find to help the development of this extension. Thanks!
+
+Sample behat.yml file
+
+```yml
+default:
+  formatters:
+        pretty: true
+  suites:
+    default:
+      contexts:
+        - FeatureContext
+  extensions:
+        Genesis\DBBackup\Extension:
+            autoBackup: true
+            autoRestore: true
+            autoRemove: true
+            backupPath: ./backups # You'll need to create this folder.
+            connections:
+                mysql:
+                    engine: mysql
+                    host: 127.0.0.1
+                    port: 3307
+                    dbname: cms
+                    username: cms
+                    password: cms
+                    schema: 
+                    prefix: 
+```
