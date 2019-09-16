@@ -4,8 +4,8 @@ namespace Genesis\DBBackup\Extension\Initializer;
 
 use Behat\Behat\Context\Context;
 use Behat\Behat\Context\Initializer\ContextInitializer;
-use DBBackup\Config;
-use DBBackup\DBBackupContext;
+use Genesis\DBBackup\Config;
+use Genesis\DBBackup\DBBackupContext;
 
 /**
  * ContextInitialiser class.
@@ -28,6 +28,11 @@ class Initializer implements ContextInitializer
     private $autoRestore = false;
 
     /**
+     * @var boolean
+     */
+    private $autoRemove = false;
+
+    /**
      * @var string
      */
     private $backupPath;
@@ -37,15 +42,17 @@ class Initializer implements ContextInitializer
      * @param array $dataModMapping
      */
     public function __construct(
-        array $connection,
+        array $connections,
         string $backupPath,
         bool $autoBackup = false,
-        bool $autoRestore = false
+        bool $autoRestore = false,
+        bool $autoRemove = false
     ) {
-        $this->connection = $connection;
+        $this->connections = $connections;
         $this->backupPath = $backupPath;
         $this->autoBackup = $autoBackup;
         $this->autoRestore = $autoRestore;
+        $this->autoRemove = $autoRemove;
     }
 
     /**
@@ -54,7 +61,13 @@ class Initializer implements ContextInitializer
     public function initializeContext(Context $context)
     {
         if ($context instanceof DBBackupContext) {
-            $context::$config = new Config($this->connection, $this->backupPath, $this->autoBackup, $this->autoRestore);
+            $context::$config = new Config(
+                $this->connections,
+                $this->backupPath,
+                $this->autoBackup,
+                $this->autoRestore,
+                $this->autoRemove
+            );
         }
     }
 }

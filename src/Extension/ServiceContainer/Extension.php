@@ -61,32 +61,18 @@ class Extension implements ExtensionInterface
     {
         $builder
             ->children()
-                ->arrayNode('connection')
-                    ->isRequired()
-                    ->children()
-                        ->scalarNode('host')
-                            ->defaultNull()
-                        ->end()
-                        ->scalarNode('engine')
-                            ->isRequired()
-                        ->end()
-                        ->scalarNode('dbname')
-                            ->defaultNull()
-                        ->end()
-                        ->scalarNode('port')
-                            ->defaultNull()
-                        ->end()
-                        ->scalarNode('username')
-                            ->defaultNull()
-                        ->end()
-                        ->scalarNode('password')
-                            ->defaultNull()
-                        ->end()
-                        ->scalarNode('schema')
-                            ->defaultNull()
-                        ->end()
-                        ->scalarNode('prefix')
-                            ->defaultNull()
+                ->arrayNode('connections')
+                    ->useAttributeAsKey('name')
+                    ->arrayPrototype()
+                        ->children()
+                            ->scalarNode('host')->defaultNull()->end()
+                            ->scalarNode('engine')->isRequired()->end()
+                            ->scalarNode('dbname')->defaultNull()->end()
+                            ->scalarNode('port')->defaultNull()->end()
+                            ->scalarNode('username')->defaultNull()->end()
+                            ->scalarNode('password')->defaultNull()->end()
+                            ->scalarNode('schema')->defaultNull()->end()
+                            ->scalarNode('prefix')->defaultNull()->end()
                         ->end()
                     ->end()
                 ->end()
@@ -114,10 +100,10 @@ class Extension implements ExtensionInterface
      */
     public function load(ContainerBuilder $container, array $config)
     {
-        if (! isset($config['connection'])) {
-            $config['connection'] = [];
+        if (empty($config['connections'])) {
+            $config['connections'] = [];
         }
-        $container->setParameter('genesis.dbbackup.config.connection', $config['connection']);
+        $container->setParameter('genesis.dbbackup.config.connections', $config['connections']);
 
         if (! isset($config['backupPath'])) {
             throw new \Exception('Backup path is required.');
@@ -132,13 +118,19 @@ class Extension implements ExtensionInterface
         if (! isset($config['autoRestore'])) {
             $config['autoRestore'] = false;
         }
-        $container->setParameter('genesis.dbbackup.config.autoRestore', $config['autoBackup']);
+        $container->setParameter('genesis.dbbackup.config.autoRestore', $config['autoRestore']);
+
+        if (! isset($config['autoRemove'])) {
+            $config['autoRemove'] = false;
+        }
+        $container->setParameter('genesis.dbbackup.config.autoRemove', $config['autoRemove']);
 
         $definition = new Definition(Initializer::class, [
-            '%genesis.dbbackup.config.connection%',
+            '%genesis.dbbackup.config.connections%',
             '%genesis.dbbackup.config.backupPath%',
             '%genesis.dbbackup.config.autoBackup%',
             '%genesis.dbbackup.config.autoRestore%',
+            '%genesis.dbbackup.config.autoRemove%',
         ]);
         $definition->addTag(ContextExtension::INITIALIZER_TAG);
         $container->setDefinition(self::CONTEXT_INITIALISER, $definition);

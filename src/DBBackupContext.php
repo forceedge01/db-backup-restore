@@ -3,7 +3,6 @@
 namespace Genesis\DBBackup;
 
 use Behat\Behat\Context\Context;
-use Behat\Testwork\ServiceContainer\Configuration\ConfigurationLoader;
 
 /**
  * DBBackup class.
@@ -17,35 +16,46 @@ class DBBackupContext implements Context
 
     public static $backupFile;
 
-    public static $fileName;
+    private static $backupDone = false;
+
+    private static $backupError = false;
+
+    private static $restoreError = false;
 
     /**
-     * @BeforeSuite
+     * @BeforeScenario
      * @param mixed $suite
+     * @param mixed $scenario
      */
-    public static function BackupDB($suite)
+    public function BackupDB($scenario)
     {
-        // BeforeScenario with a flag can do it.
-
-        self::$fileName = 'backup-' . date('y-m-d-h-i-s') . '.sql';
+        if (self::$backupDone) {
+            return;
+        }
 
         if (!self::$config->autoBackup()) {
             return;
         }
 
-        $cmd = sprintf(
-            'mysqldump --user="%s" --password="%s" --host="%s" --port="%d" %s > %s',
-            self::$config->getDatabaseConfig('username', 'root'),
-            self::$config->getDatabaseConfig('password', 'root'),
-            self::$config->getDatabaseConfig('host', 'localhost'),
-            self::$config->getDatabaseConfig('port', 3306),
-            self::$config->getDatabaseConfig('dbname'),
-            self::$config->getBackupPath() . '/' . self::$fileName
-        );
+        self::$config->addDatabaseConfig('filename', 'backup-' . date('y-m-d-h-i-s') . '.sql');
 
         echo 'Backing up database...' . PHP_EOL;
-        echo $cmd . PHP_EOL;
-        // exec($cmd);
+        foreach (self::$config->getDatabaseConfigs() as $connection => $config) {
+            $class = self::getHandler($config['engine']);
+            $cmd = $class::backupCommand(self::$config);
+            echo $cmd . PHP_EOL;
+            $output = '';
+            $statusCode = 0;
+            echo exec($cmd, $output, $statusCode);
+
+            if ($statusCode !== 0) {
+                self::$backupError = true;
+                exec('rm ' . self::$config->getBackupPath() . DIRECTORY_SEPARATOR . $config['filename']);
+                throw new \Exception('Unable to backup, something went wrong.');
+            }
+        }
+
+        self::$backupDone = true;
         echo 'Backup complete';
     }
 
@@ -55,34 +65,49 @@ class DBBackupContext implements Context
      */
     public static function restoreDB($suite)
     {
-        if (!self::$config->autoBackup() || !self::$config->autoRestore()) {
-            return;
+        if (self::$config->autoBackup() && self::$config->autoRestore() && !self::$backupError) {
+            echo 'Restoring database...' . PHP_EOL;
+            foreach (self::$config->getDatabaseConfigs() as $connection => $config) {
+                $class = self::getHandler($config['engine']);
+
+                $dropCmd = $class::dropDatabaseCommand(self::$config);
+                echo $dropCmd . PHP_EOL;
+                echo shell_exec($dropCmd);
+
+                $createCmd = $class::createDatabaseCommand(self::$config);
+                echo $createCmd . PHP_EOL;
+                echo shell_exec($createCmd);
+
+                $cmd = $class::restoreCommand(self::$config);
+                echo $cmd . PHP_EOL;
+                $output = '';
+                $statusCode = 0;
+                echo exec($cmd, $output, $statusCode);
+
+                if ($statusCode !== 0) {
+                    self::$restoreError = true;
+                    throw new \Exception('Unable to restore, something went wrong.');
+                }
+            }
+            echo 'Restore complete' . PHP_EOL;
         }
 
-        $cmd = sprintf(
-            'mysql -u "%s" -p{$password} -h "%s" --port="%d" %s < %s',
-            self::$config->getDatabaseConfig('username', 'root'),
-            self::$config->getDatabaseConfig('password', 'root'),
-            self::$config->getDatabaseConfig('host', 'localhost'),
-            self::$config->getDatabaseConfig('port', 3306),
-            self::$config->getDatabaseConfig('dbname'),
-            self::$config->getBackupPath() . '/' . self::$fileName
-        );
-
-        echo 'Restoring database...' . PHP_EOL;
-        echo $cmd . PHP_EOL;
-        // exec($cmd);
-        echo 'Restore complete';
-
-        if (self::$config->autoRemove()) {
-            exec(sprintf('rm %s', self::$config->getBackupPath()  . '/' . self::$fileName));
+        if (self::$config->autoRemove() && self::$restoreError === false) {
+            echo 'Removing auto generated files.' . PHP_EOL;
+            foreach (self::$config->getDatabaseConfigs() as $connection => $config) {
+                exec(sprintf(
+                    'rm %s',
+                    self::$config->getBackupPath()  . DIRECTORY_SEPARATOR . $config['filename']
+                ));
+            }
         }
     }
 
-    private static function getYamlConfiguration()
+    /**
+     * @return string
+     */
+    private static function getHandler(string $handlerRef): string
     {
-        $config = new ConfigurationLoader('BEHAT_PARAMS', getcwd() . '/behat.yml'))->loadConfiguration();
-
-        return $config[0]['extensions']['Genesis\\DBBackup\\Extension'];
+        return __NAMESPACE__ . '\\Handler\\' . strtolower($handlerRef);
     }
 }
