@@ -37,10 +37,11 @@ class DBBackupContext implements Context
             return;
         }
 
-        self::$config->addDatabaseConfig('filename', 'backup-' . date('y-m-d-h-i-s') . '.sql');
+        self::$config->addConfig('filename', 'backup-' . date('y-m-d-h-i-s') . '.sql');
 
         echo 'Backing up database...' . PHP_EOL;
         foreach (self::$config->getDatabaseConfigs() as $connection => $config) {
+            self::$config->setActiveConfig($connection);
             $class = self::getHandler($config['engine']);
             $cmd = $class::backupCommand(self::$config);
             echo $cmd . PHP_EOL;
@@ -68,6 +69,7 @@ class DBBackupContext implements Context
         if (self::$config->autoBackup() && self::$config->autoRestore() && !self::$backupError) {
             echo 'Restoring database...' . PHP_EOL;
             foreach (self::$config->getDatabaseConfigs() as $connection => $config) {
+                self::$config->setActiveConfig($connection);
                 $class = self::getHandler($config['engine']);
 
                 $dropCmd = $class::dropDatabaseCommand(self::$config);

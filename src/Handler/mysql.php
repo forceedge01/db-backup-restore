@@ -24,7 +24,7 @@ class mysql implements HandlerInterface
             $config->getDatabaseConfig('host', 'localhost'),
             $config->getDatabaseConfig('port', 3306),
             $config->getDatabaseConfig('dbname'),
-            $config->getBackupPath() . DIRECTORY_SEPARATOR . $config->getDatabaseConfig('filename')
+            $config->getBackupPath() . DIRECTORY_SEPARATOR . $config->getConfig('filename')
         );
     }
 
@@ -39,7 +39,7 @@ class mysql implements HandlerInterface
             '%s %s < %s',
             self::connectionString($config),
             $config->getDatabaseConfig('dbname'),
-            $config->getBackupPath() . DIRECTORY_SEPARATOR . $config->getDatabaseConfig('filename')
+            $config->getBackupPath() . DIRECTORY_SEPARATOR . $config->getConfig('filename')
         );
     }
 

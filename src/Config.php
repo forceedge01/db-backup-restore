@@ -7,9 +7,11 @@ namespace Genesis\DBBackup;
  */
 class Config
 {
-    private $databaseConfigs;
+    public static $databaseConfigs = [];
 
-    private static $connection;
+    public static $config = [];
+
+    public static $connection;
 
     public function __construct(
         array $databaseConfigs,
@@ -19,7 +21,7 @@ class Config
         bool $autoRemove = false,
         bool $keepClean = false
     ) {
-        $this->databaseConfigs = $databaseConfigs;
+        self::$databaseConfigs = $databaseConfigs;
         $this->backupPath = realpath($backupPath);
         $this->autoBackup = $autoBackup;
         $this->autoRestore = $autoRestore;
@@ -36,33 +38,47 @@ class Config
         self::$connection = '';
     }
 
+    public function getConfig($key, $default = null): ?string
+    {
+        $connection = self::$connection;
+        if (!$connection) {
+            $connection = key(self::$databaseConfigs);
+        }
+
+        if (!isset(self::$config[$connection][$key])) {
+            return $default;
+        }
+
+        return self::$config[$connection][$key];
+    }
+
     public function getDatabaseConfig($key, $default = null): ?string
     {
         $connection = self::$connection;
         if (!$connection) {
-            $connection = key($this->databaseConfigs);
+            $connection = key(self::$databaseConfigs);
         }
 
-        if (!isset($this->databaseConfigs[$connection][$key])) {
+        if (!isset(self::$databaseConfigs[$connection][$key])) {
             return $default;
         }
 
-        return $this->databaseConfigs[$connection][$key];
+        return self::$databaseConfigs[$connection][$key];
     }
 
-    public function addDatabaseConfig($key, $value)
+    public function addConfig($key, $value)
     {
         $connection = self::$connection;
         if (!$connection) {
-            $connection = key($this->databaseConfigs);
+            $connection = key(self::$databaseConfigs);
         }
 
-        $this->databaseConfigs[$connection][$key] = $value;
+        self::$config[$connection][$key] = $value;
     }
 
     public function getDatabaseConfigs(): array
     {
-        return $this->databaseConfigs;
+        return self::$databaseConfigs;
     }
 
     public function autoBackup(): bool
