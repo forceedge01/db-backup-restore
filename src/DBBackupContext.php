@@ -99,7 +99,7 @@ class DBBackupContext implements Context
             foreach (self::$config->getDatabaseConfigs() as $connection => $config) {
                 exec(sprintf(
                     'rm %s',
-                    self::$config->getBackupPath()  . DIRECTORY_SEPARATOR . $config['filename']
+                    self::$config->getBackupPath()  . DIRECTORY_SEPARATOR . self::$config->getConfig('filename')
                 ));
             }
         }
