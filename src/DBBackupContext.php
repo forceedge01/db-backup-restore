@@ -66,6 +66,10 @@ class DBBackupContext implements Context
      */
     public static function restoreDB($suite)
     {
+        if (!self::$config) {
+            return;
+        }
+
         if (self::$config->autoBackup() && self::$config->autoRestore() && !self::$backupError) {
             echo 'Restoring database...' . PHP_EOL;
             foreach (self::$config->getDatabaseConfigs() as $connection => $config) {
@@ -111,6 +115,10 @@ class DBBackupContext implements Context
      */
     public static function keepBackupsClean($suite)
     {
+        if (!self::$config) {
+            return;
+        }
+
         if (self::$config->keepClean() && self::$backupError === false) {
             echo 'Cleaning all backup files...' . PHP_EOL;
             exec(sprintf(
